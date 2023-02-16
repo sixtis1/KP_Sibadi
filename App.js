@@ -126,13 +126,6 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontSize: 18,
   },
-  resultContainer: {
-    marginTop: 20,
-  },
-  resultText: {
-    fontSize: 18,
-    fontWeight: "bold",
-  },
 });
 
 export default App;
