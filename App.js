@@ -82,14 +82,17 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
+
   label: {
     marginBottom: 5,
     fontSize: 16,
   },
+
   pickers: {
     flexDirection: "row",
     paddingLeft: 15,
   },
+
   pickerContainer: {
     borderColor: "#ccc",
     borderWidth: 1,
@@ -99,10 +102,12 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
+
   picker: {
     width: 126,
     height: 50,
   },
+
   inputContainer: {
     borderColor: "#ccc",
     borderWidth: 1,
@@ -110,11 +115,13 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     marginBottom: 10,
   },
+
   input: {
     width: 250,
     height: 50,
     fontSize: 16,
   },
+
   button: {
     paddingVertical: 10,
     paddingHorizontal: 20,
@@ -122,6 +129,7 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     marginTop: 20,
   },
+
   buttonText: {
     color: "#fff",
     fontSize: 18,

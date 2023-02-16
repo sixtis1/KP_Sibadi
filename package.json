@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@react-native-picker/picker": "^2.4.8",
+    "eas": "^0.1.0",
     "expo": "^47.0.13",
     "expo-image": "^1.0.0-rc.1",
     "expo-status-bar": "~1.4.2",
