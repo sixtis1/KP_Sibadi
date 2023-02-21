@@ -1,4 +1,3 @@
-import { StatusBar } from "expo-status-bar";
 import React, { useState } from "react";
 import {
   StyleSheet,
@@ -9,6 +8,8 @@ import {
   Image,
 } from "react-native";
 import { Picker } from "@react-native-picker/picker";
+import Database from "./Database.js";
+import ResultsScreen from "./ResultsScreen";
 
 const years = [
   { label: "2023", value: "2023" },
@@ -29,11 +30,39 @@ const faculties = [
   { label: "Факультет 3", value: "Факультет 3" },
 ];
 
-const MainPage = () => {
+const db = new Database();
+
+const MainPage = ({ navigation }) => {
   const [selectedFaculty, setSelectedFaculty] = useState("");
   const [selectedYear, setSelectedYear] = useState("");
   const [selectedSemester, setSelectedSemester] = useState("");
   const [studentId, setStudentId] = useState("");
+  const [results, setResults] = useState([]);
+  const [error, setError] = useState(null);
+
+  const handleShowResults = () => {
+    showResults();
+    db.getGrades(studentId, selectedYear, selectedSemester)
+      .then((results) => {
+        if (results.length === 0) {
+          throw new Error("No data found in the database.");
+        } else {
+          setResults(results);
+        }
+      })
+      .catch((error) => {
+        setError("Ошибка: " + error);
+        setResults([]);
+      });
+  };
+
+  const showResults = () => {
+    navigation.navigate("Results", {
+      studentId: studentId,
+      selectedYear: selectedYear,
+      selectedSemester: selectedSemester,
+    });
+  };
 
   return (
     <View style={styles.container}>
@@ -47,9 +76,13 @@ const MainPage = () => {
           selectedValue={selectedFaculty}
           onValueChange={(itemValue) => setSelectedFaculty(itemValue)}
         >
-          <Picker.Item label="Факультет 1" value="Факультет 1" />
-          <Picker.Item label="Факультет 2" value="Факультет 2" />
-          <Picker.Item label="Факультет 3" value="Факультет 3" />
+          {faculties.map((faculty, index) => (
+            <Picker.Item
+              key={index}
+              label={faculty.label}
+              value={faculty.value}
+            />
+          ))}
         </Picker>
       </View>
       <View style={styles.pickers}>
@@ -91,9 +124,11 @@ const MainPage = () => {
           keyboardType="numeric"
         />
       </View>
-      <TouchableOpacity style={styles.button}>
+      <TouchableOpacity style={styles.button} onPress={handleShowResults}>
         <Text style={styles.buttonText}>Показать результаты</Text>
       </TouchableOpacity>
+      {results.length > 0 && <ResultsScreen results={results} />}
+      {error && <Text style={styles.errorText}>{error}</Text>}
     </View>
   );
 };
