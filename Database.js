@@ -73,13 +73,54 @@ class Database {
       );
     });
   }
-
+  getYears() {
+    return new Promise((resolve, reject) => {
+      db.transaction((tx) => {
+        tx.executeSql(
+          "SELECT DISTINCT year FROM grades",
+          [],
+          (_, { rows: { _array } }) => {
+            console.log("Years:", _array);
+            if (_array.length === 0) {
+              reject("No data found in the database.");
+            } else {
+              resolve(_array);
+            }
+          },
+          (_, error) => {
+            reject(error);
+          }
+        );
+      });
+    });
+  }
+  getSemesters() {
+    return new Promise((resolve, reject) => {
+      db.transaction((tx) => {
+        tx.executeSql(
+          "SELECT DISTINCT semester FROM subjects",
+          [],
+          (_, { rows: { _array } }) => {
+            console.log("Semesters:", _array);
+            if (_array.length === 0) {
+              reject("No data found in the database.");
+            } else {
+              resolve(_array);
+            }
+          },
+          (_, error) => {
+            reject(error);
+          }
+        );
+      });
+    });
+  }
   getGrades(studentId, year, semester) {
     return new Promise((resolve, reject) => {
       db.transaction((tx) => {
         console.log("Query parameters:", studentId, year, semester);
         tx.executeSql(
-          "SELECT s.subject_name, g.grade, g.year FROM grades g INNER JOIN subjects s ON g.subject_id = s.subject_id WHERE g.student_id = ? AND g.year = ? AND s.semester = ?",
+          "SELECT s.subject_name, g.grade, sc.score_1k, sc.score_2k, g.year FROM grades g INNER JOIN subjects s ON g.subject_id = s.subject_id INNER JOIN Scores sc ON g.student_id = sc.student_id WHERE g.student_id = ? AND g.year = ? AND s.semester = ?",
           [studentId, year, semester],
           (_, { rows: { _array } }) => {
             console.log("Grades:", _array);
