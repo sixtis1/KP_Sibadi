@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   Image,
 } from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Picker } from "@react-native-picker/picker";
 import Database from "./Database.js";
 import ResultsScreen from "./ResultsScreen";
@@ -33,35 +34,58 @@ const faculties = [
 const db = new Database();
 
 const MainPage = ({ navigation }) => {
-  const [selectedFaculty, setSelectedFaculty] = useState("");
-  const [selectedYear, setSelectedYear] = useState("");
-  const [selectedSemester, setSelectedSemester] = useState("");
-  const [studentId, setStudentId] = useState("");
+  const [selectedFaculty, setSelectedFaculty] = useState("Факультет 1");
+  const [selectedYear, setSelectedYear] = useState(2022);
+  const [selectedSemester, setSelectedSemester] = useState("Весна");
+  const [studentId, setStudentId] = useState(1);
   const [results, setResults] = useState([]);
   const [error, setError] = useState(null);
 
+  const saveData = async (
+    results,
+    studentId,
+    selectedYear,
+    selectedSemester
+  ) => {
+    try {
+      await AsyncStorage.setItem("results", JSON.stringify(results));
+      await AsyncStorage.setItem("studentId", studentId.toString());
+      await AsyncStorage.setItem("selectedYear", selectedYear.toString());
+      await AsyncStorage.setItem("selectedSemester", selectedSemester);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  const clearAllData = async () => {
+    try {
+      await AsyncStorage.clear();
+      console.log("AsyncStorage successfully cleared!");
+    } catch (e) {
+      console.log("Failed to clear AsyncStorage");
+    }
+  };
   const handleShowResults = () => {
-    showResults();
+    setError(null);
+    clearAllData();
     db.getGrades(studentId, selectedYear, selectedSemester)
       .then((results) => {
         if (results.length === 0) {
           throw new Error("No data found in the database.");
         } else {
           setResults(results);
+          saveData(results, studentId, selectedYear, selectedSemester);
+          showResults();
         }
       })
       .catch((error) => {
         setError("Ошибка: " + error);
         setResults([]);
+        clearAllData();
       });
   };
 
   const showResults = () => {
-    navigation.navigate("Results", {
-      studentId: studentId,
-      selectedYear: selectedYear,
-      selectedSemester: selectedSemester,
-    });
+    navigation.navigate("Results");
   };
 
   return (
