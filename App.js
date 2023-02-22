@@ -15,8 +15,16 @@ export default function App() {
     <View style={styles.container}>
       <NavigationContainer>
         <Stack.Navigator>
-          <Stack.Screen name="Main" component={MainPage} />
-          <Stack.Screen name="Results" component={ResultsScreen} />
+          <Stack.Screen
+            options={{ headerShown: false }}
+            name="Main"
+            component={MainPage}
+          />
+          <Stack.Screen
+            options={{ headerShown: false }}
+            name="Results"
+            component={ResultsScreen}
+          />
         </Stack.Navigator>
       </NavigationContainer>
     </View>
