@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   StyleSheet,
   View,
@@ -11,19 +11,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Picker } from "@react-native-picker/picker";
 import Database from "./Database.js";
 import ResultsScreen from "./ResultsScreen";
-
-const years = [
-  { label: "2023", value: "2023" },
-  { label: "2022", value: "2022" },
-  { label: "2021", value: "2021" },
-  { label: "2020", value: "2020" },
-  { label: "2019", value: "2019" },
-];
-
-const semesters = [
-  { label: "Весна", value: "Весна" },
-  { label: "Осень", value: "Осень" },
-];
+import { StatusBar } from "expo-status-bar";
 
 const faculties = [
   { label: "Факультет 1", value: "Факультет 1" },
@@ -40,6 +28,31 @@ const MainPage = ({ navigation }) => {
   const [studentId, setStudentId] = useState(1);
   const [results, setResults] = useState([]);
   const [error, setError] = useState(null);
+  const [years, setYears] = useState([]);
+  const [semesters, setSemesters] = useState([]);
+
+  useEffect(() => {
+    db.getYears()
+      .then((json) => {
+        const years = json.map((item) => item.year);
+        setYears(years);
+      })
+      .catch((error) => {
+        setError("Ошибка: " + error);
+      });
+  }, []);
+
+  useEffect(() => {
+    db.getSemesters()
+      .then((result) => {
+        const semesterValues = result.map((item) => item.semester);
+        setSemesters(semesterValues);
+      })
+      .catch((error) => {
+        console.error("Failed to fetch semesters from DB", error);
+        setError("Failed to fetch semesters from DB");
+      });
+  }, []);
 
   const saveData = async (
     results,
@@ -70,7 +83,9 @@ const MainPage = ({ navigation }) => {
     db.getGrades(studentId, selectedYear, selectedSemester)
       .then((results) => {
         if (results.length === 0) {
-          throw new Error("No data found in the database.");
+          throw new Error(
+            "Ошибка в введенных данных. Проверьте данные и повторите попытку"
+          );
         } else {
           setResults(results);
           saveData(results, studentId, selectedYear, selectedSemester);
@@ -78,7 +93,9 @@ const MainPage = ({ navigation }) => {
         }
       })
       .catch((error) => {
-        setError("Ошибка: " + error);
+        setError(
+          "Ошибка в введенных данных. Проверьте данные и повторите попытку"
+        );
         setResults([]);
         clearAllData();
       });
@@ -113,12 +130,11 @@ const MainPage = ({ navigation }) => {
         <View style={styles.pickerContainer}>
           <Picker
             style={styles.picker}
-            mode="dropdown"
             selectedValue={selectedYear}
-            onValueChange={(itemValue) => setSelectedYear(itemValue)}
+            onValueChange={(value) => setSelectedYear(value)}
           >
-            {years.map((year, index) => (
-              <Picker.Item key={index} label={year.label} value={year.value} />
+            {years.map((year) => (
+              <Picker.Item key={year} label={year.toString()} value={year} />
             ))}
           </Picker>
         </View>
@@ -130,11 +146,7 @@ const MainPage = ({ navigation }) => {
             onValueChange={(itemValue) => setSelectedSemester(itemValue)}
           >
             {semesters.map((semester, index) => (
-              <Picker.Item
-                key={index}
-                label={semester.label}
-                value={semester.value}
-              />
+              <Picker.Item label={semester} value={semester} key={index} />
             ))}
           </Picker>
         </View>
