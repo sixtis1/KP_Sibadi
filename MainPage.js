@@ -11,7 +11,6 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Picker } from "@react-native-picker/picker";
 import Database from "./Database.js";
 import ResultsScreen from "./ResultsScreen";
-import { StatusBar } from "expo-status-bar";
 
 const faculties = [
   { label: "Факультет 1", value: "Факультет 1" },
