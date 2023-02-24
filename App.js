@@ -12,22 +12,20 @@ export default function App() {
   const db = new Database();
 
   return (
-    <View style={styles.container}>
-      <NavigationContainer>
-        <Stack.Navigator>
-          <Stack.Screen
-            options={{ headerShown: false }}
-            name="Main"
-            component={MainPage}
-          />
-          <Stack.Screen
-            options={{ headerShown: false }}
-            name="Results"
-            component={ResultsScreen}
-          />
-        </Stack.Navigator>
-      </NavigationContainer>
-    </View>
+    <NavigationContainer>
+      <Stack.Navigator>
+        <Stack.Screen
+          options={{ headerShown: false }}
+          name="Main"
+          component={MainPage}
+        />
+        <Stack.Screen
+          options={{ headerShown: false }}
+          name="Results"
+          component={ResultsScreen}
+        />
+      </Stack.Navigator>
+    </NavigationContainer>
   );
 }
 
@@ -40,10 +38,3 @@ function testDatabase() {
 }
 
 testDatabase();
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#fff",
-  },
-});

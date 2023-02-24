@@ -6,29 +6,24 @@ import {
   TextInput,
   TouchableOpacity,
   Image,
+  SafeAreaView,
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { Picker } from "@react-native-picker/picker";
 import Database from "./Database.js";
-import ResultsScreen from "./ResultsScreen";
-
-const faculties = [
-  { label: "Факультет 1", value: "Факультет 1" },
-  { label: "Факультет 2", value: "Факультет 2" },
-  { label: "Факультет 3", value: "Факультет 3" },
-];
+import DropDownPicker from "react-native-dropdown-picker";
 
 const db = new Database();
 
 const MainPage = ({ navigation }) => {
-  const [selectedFaculty, setSelectedFaculty] = useState("Факультет 1");
-  const [selectedYear, setSelectedYear] = useState(2022);
-  const [selectedSemester, setSelectedSemester] = useState("Весна");
+  const [selectedYear, setSelectedYear] = useState(null);
+  const [selectedSemester, setSelectedSemester] = useState(null);
   const [studentId, setStudentId] = useState(1);
   const [results, setResults] = useState([]);
   const [error, setError] = useState(null);
   const [years, setYears] = useState([]);
   const [semesters, setSemesters] = useState([]);
+  const [openYear, setOpenYear] = useState(false);
+  const [openSemester, setOpenSemester] = useState(false);
 
   useEffect(() => {
     db.getYears()
@@ -68,6 +63,7 @@ const MainPage = ({ navigation }) => {
       console.log(error);
     }
   };
+
   const clearAllData = async () => {
     try {
       await AsyncStorage.clear();
@@ -76,9 +72,11 @@ const MainPage = ({ navigation }) => {
       console.log("Failed to clear AsyncStorage");
     }
   };
+
   const handleShowResults = () => {
     setError(null);
     clearAllData();
+    console.log(studentId, selectedYear, selectedSemester);
     db.getGrades(studentId, selectedYear, selectedSemester)
       .then((results) => {
         if (results.length === 0) {
@@ -91,7 +89,7 @@ const MainPage = ({ navigation }) => {
           showResults();
         }
       })
-      .catch((error) => {
+      .catch(() => {
         setError(
           "Ошибка в введенных данных. Проверьте данные и повторите попытку"
         );
@@ -105,50 +103,49 @@ const MainPage = ({ navigation }) => {
   };
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <View style={styles.logoContainer}>
         <Image style={styles.logo} source={require("./assets/logo.png")} />
       </View>
-      <View style={styles.facultyPicker}>
-        <Picker
-          style={styles.facultyPicker}
-          mode="dropdown"
-          selectedValue={selectedFaculty}
-          onValueChange={(itemValue) => setSelectedFaculty(itemValue)}
-        >
-          {faculties.map((faculty, index) => (
-            <Picker.Item
-              key={index}
-              label={faculty.label}
-              value={faculty.value}
-            />
-          ))}
-        </Picker>
+      <View style={styles.dropdownContainer}>
+        <DropDownPicker
+          open={openYear}
+          value={selectedYear}
+          placeholder="Выберите год обучения"
+          items={years.map((year) => ({
+            label: year.toString(),
+            value: year,
+          }))}
+          setOpen={(isOpen) => {
+            setOpenYear(isOpen);
+            setOpenSemester(false);
+          }}
+          setValue={setSelectedYear}
+          setItems={() => {}}
+          containerStyle={[styles.dropdownContainer, { zIndex: 3 }]}
+          style={[styles.dropdown]}
+          dropDownContainerStyle={[{ width: "77%" }]}
+        />
       </View>
-      <View style={styles.pickers}>
-        <View style={styles.pickerContainer}>
-          <Picker
-            style={styles.picker}
-            selectedValue={selectedYear}
-            onValueChange={(value) => setSelectedYear(value)}
-          >
-            {years.map((year) => (
-              <Picker.Item key={year} label={year.toString()} value={year} />
-            ))}
-          </Picker>
-        </View>
-        <View style={styles.pickerContainer}>
-          <Picker
-            style={styles.picker}
-            mode="dropdown"
-            selectedValue={selectedSemester}
-            onValueChange={(itemValue) => setSelectedSemester(itemValue)}
-          >
-            {semesters.map((semester, index) => (
-              <Picker.Item label={semester} value={semester} key={index} />
-            ))}
-          </Picker>
-        </View>
+      <View style={styles.dropdownContainer}>
+        <DropDownPicker
+          open={openSemester}
+          value={selectedSemester}
+          placeholder="Выберите семестр"
+          items={semesters.map((semester) => ({
+            label: semester,
+            value: semester,
+          }))}
+          setOpen={(isOpen) => {
+            setOpenSemester(isOpen);
+            setOpenYear(false);
+          }}
+          setValue={setSelectedSemester}
+          setItems={() => {}}
+          containerStyle={[styles.dropdownContainer, { zIndex: 1 }]}
+          style={[styles.dropdown]}
+          dropDownContainerStyle={[{ width: "77%" }]}
+        />
       </View>
       <View style={styles.inputContainer}>
         <Text style={styles.inputLabel}>Номер зачетки:</Text>
@@ -162,75 +159,56 @@ const MainPage = ({ navigation }) => {
       <TouchableOpacity style={styles.button} onPress={handleShowResults}>
         <Text style={styles.buttonText}>Показать результаты</Text>
       </TouchableOpacity>
-      {results.length > 0 && <ResultsScreen results={results} />}
       {error && <Text style={styles.errorText}>{error}</Text>}
-    </View>
+    </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#fff",
     alignItems: "center",
     justifyContent: "center",
+    backgroundColor: "white",
+    position: "relative",
   },
-
   label: {
     marginBottom: 5,
     fontSize: 16,
   },
-  facultyPicker: {
-    borderColor: "#ccc",
-    borderWidth: 1,
-    borderRadius: 5,
-    width: 272,
-    height: 50,
-    marginBottom: 10,
-    alignItems: "center",
+  dropdownContainer: {
+    flexdirection: "column",
     justifyContent: "center",
-  },
-
-  pickers: {
-    flexDirection: "row",
-    paddingLeft: 15,
-  },
-
-  pickerContainer: {
-    borderColor: "#ccc",
-    borderWidth: 1,
-    borderRadius: 5,
-    marginBottom: 10,
-    marginRight: 15,
     alignItems: "center",
-    justifyContent: "center",
+    paddingBottom: 5,
+    paddingHorizontal: 20,
   },
-
-  picker: {
-    width: 126,
-    height: 50,
+  dropdown: {
+    width: "77%",
   },
-
   inputContainer: {
-    borderColor: "#ccc",
+    borderColor: "black",
     borderWidth: 1,
     borderRadius: 5,
     paddingHorizontal: 10,
     marginBottom: 10,
+    backgroundColor: "white",
   },
 
   input: {
-    width: 250,
-    height: 50,
+    width: 220,
+    height: 45,
     fontSize: 16,
+    backgroundColor: "white",
   },
 
   button: {
     paddingVertical: 10,
     paddingHorizontal: 20,
-    backgroundColor: "#4287f5",
-    borderRadius: 5,
+    backgroundColor: "#5188E3",
+    borderRadius: 50,
     marginTop: 20,
+    color: "white",
   },
 
   buttonText: {

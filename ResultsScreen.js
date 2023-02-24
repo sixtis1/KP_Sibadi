@@ -13,11 +13,7 @@ export default function ResultsScreen() {
 
   const handleGoBack = () => {
     setResults([]);
-    navigation.reset({
-      index: 0,
-      routes: [{ name: "Main" }],
-    });
-    return true;
+    navigation.navigate("Main");
   };
 
   async function getResults() {
@@ -45,17 +41,20 @@ export default function ResultsScreen() {
     }
   }
   useEffect(() => {
-    getResults();
     BackHandler.addEventListener("hardwareBackPress", handleGoBack);
     return () => {
       BackHandler.removeEventListener("hardwareBackPress", handleGoBack);
     };
   }, []);
 
+  useEffect(() => {
+    getResults();
+  }, []);
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.title}>Результаты экзаменов</Text>
+        <Text style={styles.title}>Результаты студента</Text>
         <Text style={styles.subtitle}>Студент: {studentId}</Text>
         <Text style={styles.subtitle}>Год: {selectedYear}</Text>
         <Text style={styles.subtitle}>Семестр: {selectedSemester}</Text>
@@ -88,6 +87,7 @@ export default function ResultsScreen() {
     </View>
   );
 }
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
