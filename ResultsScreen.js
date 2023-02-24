@@ -1,5 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { StyleSheet, Text, View, Button, BackHandler } from "react-native";
+import {
+  StyleSheet,
+  Text,
+  View,
+  TouchableOpacity,
+  BackHandler,
+} from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useNavigation } from "@react-navigation/native";
 import { Table, Row } from "react-native-table-component";
@@ -63,8 +69,8 @@ export default function ResultsScreen() {
         <Table style={styles.table}>
           <Row
             data={["Предмет", "Балл 1", "Балл 2", "Оценка"]}
-            style={styles.head}
-            textStyle={styles.textHead}
+            style={[styles.head, styles.borderStyle]}
+            textStyle={[styles.textHead]}
           />
           {results.map((result) => (
             <Row
@@ -75,15 +81,17 @@ export default function ResultsScreen() {
                 result.score_2k.toString(),
                 result.grade.toString(),
               ]}
-              style={styles.row}
-              textStyle={styles.text}
+              style={[styles.row, styles.borderStyle]}
+              textStyle={[styles.text]}
             />
           ))}
         </Table>
       </View>
-      <View style={styles.buttonContainer}>
-        <Button style={styles.button} title="Назад" onPress={handleGoBack} />
-      </View>
+      <TouchableOpacity style={styles.buttonContainer} onPress={handleGoBack}>
+        <View style={styles.button}>
+          <Text style={styles.buttonText}>Назад</Text>
+        </View>
+      </TouchableOpacity>
     </View>
   );
 }
@@ -111,14 +119,22 @@ const styles = StyleSheet.create({
   table: {
     flex: 1,
   },
+  borderStyle: {
+    borderWidth: 1,
+    borderColor: "gray",
+  },
   head: {
     height: 40,
-    backgroundColor: "#f1f8ff",
+    backgroundColor: "#c5d8f7",
   },
   textHead: {
     fontSize: 16,
     fontWeight: "bold",
     textAlign: "center",
+    flex: 1,
+    borderRightWidth: 1,
+    borderColor: "gray",
+    padding: 10,
   },
   row: {
     height: 40,
@@ -130,6 +146,10 @@ const styles = StyleSheet.create({
   text: {
     fontSize: 16,
     textAlign: "center",
+    flex: 1,
+    borderRightWidth: 1,
+    borderColor: "gray",
+    padding: 10,
   },
   header: {
     marginHorizontal: 20,
@@ -137,10 +157,17 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     alignItems: "center",
-    marginBottom: 20,
+    justifyContent: "flex-end",
+    marginBottom: 50,
   },
   button: {
-    marginVertical: 10,
-    width: 150,
+    backgroundColor: "#2196F3",
+    borderRadius: 50,
+    paddingVertical: 10,
+    paddingHorizontal: 50,
+  },
+  buttonText: {
+    color: "#fff",
+    fontSize: 16,
   },
 });

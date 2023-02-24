@@ -81,7 +81,7 @@ const MainPage = ({ navigation }) => {
       .then((results) => {
         if (results.length === 0) {
           throw new Error(
-            "Ошибка в введенных данных. Проверьте данные и повторите попытку"
+            "Ошибка в введенных данных. Проверьте данные и повторите попытку."
           );
         } else {
           setResults(results);
@@ -91,7 +91,7 @@ const MainPage = ({ navigation }) => {
       })
       .catch(() => {
         setError(
-          "Ошибка в введенных данных. Проверьте данные и повторите попытку"
+          "Ошибка в введенных данных. Проверьте данные и повторите попытку."
         );
         setResults([]);
         clearAllData();
@@ -122,7 +122,7 @@ const MainPage = ({ navigation }) => {
           }}
           setValue={setSelectedYear}
           setItems={() => {}}
-          containerStyle={[styles.dropdownContainer, { zIndex: 3 }]}
+          containerStyle={[styles.dropdownContainer, { zIndex: 5 }]}
           style={[styles.dropdown]}
           dropDownContainerStyle={[{ width: "77%" }]}
         />
@@ -142,7 +142,7 @@ const MainPage = ({ navigation }) => {
           }}
           setValue={setSelectedSemester}
           setItems={() => {}}
-          containerStyle={[styles.dropdownContainer, { zIndex: 1 }]}
+          containerStyle={[styles.dropdownContainer, { zIndex: 4 }]}
           style={[styles.dropdown]}
           dropDownContainerStyle={[{ width: "77%" }]}
         />
@@ -154,6 +154,9 @@ const MainPage = ({ navigation }) => {
           value={studentId}
           onChangeText={(text) => setStudentId(text)}
           keyboardType="numeric"
+          onSubmitEditing={handleShowResults}
+          maxLength={8}
+          autoFocus={true}
         />
       </View>
       <TouchableOpacity style={styles.button} onPress={handleShowResults}>
@@ -193,6 +196,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     marginBottom: 10,
     backgroundColor: "white",
+    zIndex: 3,
   },
 
   input: {
@@ -205,7 +209,7 @@ const styles = StyleSheet.create({
   button: {
     paddingVertical: 10,
     paddingHorizontal: 20,
-    backgroundColor: "#5188E3",
+    backgroundColor: "#2196F3",
     borderRadius: 50,
     marginTop: 20,
     color: "white",
@@ -223,6 +227,19 @@ const styles = StyleSheet.create({
     width: 150,
     height: 150,
     resizeMode: "contain",
+  },
+  errorText: {
+    position: "absolute",
+    bottom: 0,
+    left: 0,
+    right: 0,
+    backgroundColor: "red",
+    color: "white",
+    textAlign: "center",
+    paddingVertical: 10,
+    fontSize: 16,
+    fontWeight: "bold",
+    zIndex: 10,
   },
 });
 
