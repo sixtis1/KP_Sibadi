@@ -13,7 +13,7 @@ import Database from "./Database.js";
 import DropDownPicker from "react-native-dropdown-picker";
 
 const db = new Database();
-
+db.showDB();
 const MainPage = ({ navigation }) => {
   const [selectedYear, setSelectedYear] = useState(null);
   const [selectedSemester, setSelectedSemester] = useState(null);
@@ -28,6 +28,7 @@ const MainPage = ({ navigation }) => {
   useEffect(() => {
     db.getYears()
       .then((json) => {
+        console.log(json);
         const years = json.map((item) => item.year);
         setYears(years);
       })
@@ -105,7 +106,7 @@ const MainPage = ({ navigation }) => {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.logoContainer}>
-        <Image style={styles.logo} source={require("./assets/logo.png")} />
+        <Image style={styles.logo} source={require("../assets/logo.png")} />
       </View>
       <View style={styles.dropdownContainer}>
         <DropDownPicker

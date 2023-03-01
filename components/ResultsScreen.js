@@ -20,6 +20,7 @@ export default function ResultsScreen() {
   const handleGoBack = () => {
     setResults([]);
     navigation.navigate("Main");
+    return 1;
   };
 
   async function getResults() {
@@ -71,6 +72,7 @@ export default function ResultsScreen() {
             data={["Предмет", "Балл 1", "Балл 2", "Оценка"]}
             style={[styles.head, styles.borderStyle]}
             textStyle={[styles.textHead]}
+            flexArr={[2, 0.8, 0.8, 1]}
           />
           {results.map((result) => (
             <Row
@@ -83,6 +85,7 @@ export default function ResultsScreen() {
               ]}
               style={[styles.row, styles.borderStyle]}
               textStyle={[styles.text]}
+              flexArr={[2, 0.8, 0.8, 1]}
             />
           ))}
         </Table>
@@ -128,7 +131,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#c5d8f7",
   },
   textHead: {
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: "bold",
     textAlign: "center",
     flex: 1,
@@ -144,7 +147,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
   },
   text: {
-    fontSize: 16,
+    fontSize: 14,
     textAlign: "center",
     flex: 1,
     borderRightWidth: 1,
