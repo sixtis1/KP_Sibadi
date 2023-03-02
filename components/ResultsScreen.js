@@ -2,9 +2,9 @@ import React, { useState, useEffect } from "react";
 import {
   StyleSheet,
   Text,
-  View,
   TouchableOpacity,
   BackHandler,
+  SafeAreaView,
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useNavigation } from "@react-navigation/native";
@@ -59,14 +59,14 @@ export default function ResultsScreen() {
   }, []);
 
   return (
-    <View style={styles.container}>
-      <View style={styles.header}>
+    <SafeAreaView style={styles.container}>
+      <SafeAreaView style={styles.header}>
         <Text style={styles.title}>Результаты студента</Text>
         <Text style={styles.subtitle}>Студент: {studentId}</Text>
         <Text style={styles.subtitle}>Год: {selectedYear}</Text>
         <Text style={styles.subtitle}>Семестр: {selectedSemester}</Text>
-      </View>
-      <View style={styles.tableContainer}>
+      </SafeAreaView>
+      <SafeAreaView style={styles.tableContainer}>
         <Table style={styles.table}>
           <Row
             data={["Предмет", "Балл 1", "Балл 2", "Оценка"]}
@@ -89,13 +89,18 @@ export default function ResultsScreen() {
             />
           ))}
         </Table>
-      </View>
-      <TouchableOpacity style={styles.buttonContainer} onPress={handleGoBack}>
-        <View style={styles.button}>
+      </SafeAreaView>
+      <TouchableOpacity
+        style={styles.buttonContainer}
+        onPress={() => {
+          handleGoBack();
+        }}
+      >
+        <SafeAreaView style={styles.button}>
           <Text style={styles.buttonText}>Назад</Text>
-        </View>
+        </SafeAreaView>
       </TouchableOpacity>
-    </View>
+    </SafeAreaView>
   );
 }
 

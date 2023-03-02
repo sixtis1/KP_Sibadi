@@ -4,6 +4,7 @@ import MainPage from "./components/MainPage";
 import { createStackNavigator } from "@react-navigation/stack";
 import { NavigationContainer } from "@react-navigation/native";
 import ResultsScreen from "./components/ResultsScreen";
+import EditScreen from "./components/EditScreen";
 
 const Stack = createStackNavigator();
 
@@ -22,6 +23,11 @@ export default function App() {
           options={{ headerShown: false }}
           name="Results"
           component={ResultsScreen}
+        />
+        <Stack.Screen
+          options={{ headerShown: false }}
+          name="Edit"
+          component={EditScreen}
         />
       </Stack.Navigator>
     </NavigationContainer>

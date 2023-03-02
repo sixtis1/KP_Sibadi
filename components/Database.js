@@ -211,6 +211,49 @@ class Database {
       });
     });
   }
+
+  addScores = (
+    student_id,
+    subject_id,
+    score_1k,
+    score_2k,
+    year_id,
+    semester_id
+  ) => {
+    return new Promise((resolve, reject) => {
+      db.transaction((tx) => {
+        tx.executeSql(
+          `INSERT INTO Scores (student_id, subject_id, score_1k, score_2k, year_id, semester_id) VALUES (?, ?, ?, ?, ?, ?);`,
+          [student_id, subject_id, score_1k, score_2k, year_id, semester_id],
+          (_, result) => {
+            resolve(result);
+          },
+          (_, error) => {
+            reject(error);
+            return false;
+          }
+        );
+      });
+    });
+  };
+
+  addGrades = (student_id, subject_id, grade, year_id, semester_id) => {
+    return new Promise((resolve, reject) => {
+      db.transaction((tx) => {
+        tx.executeSql(
+          `INSERT INTO Grades (student_id, subject_id, grade, year_id, semester_id) VALUES (?, ?, ?, ?, ?);`,
+          [student_id, subject_id, grade, year_id, semester_id],
+          (_, result) => {
+            resolve(result);
+          },
+          (_, error) => {
+            reject(error);
+            return false;
+          }
+        );
+      });
+    });
+  };
 }
 
 export default Database;

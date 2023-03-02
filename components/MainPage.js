@@ -160,8 +160,24 @@ const MainPage = ({ navigation }) => {
           autoFocus={true}
         />
       </View>
-      <TouchableOpacity style={styles.button} onPress={handleShowResults}>
+
+      <TouchableOpacity
+        style={styles.button}
+        onPress={() => {
+          handleShowResults();
+        }}
+      >
         <Text style={styles.buttonText}>Показать результаты</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity
+        style={styles.button}
+        onPress={() => {
+          navigation.navigate("Edit");
+          console.log(results);
+        }}
+      >
+        <Text style={styles.buttonText}>Эдит</Text>
       </TouchableOpacity>
       {error && <Text style={styles.errorText}>{error}</Text>}
     </SafeAreaView>
