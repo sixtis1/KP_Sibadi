@@ -112,7 +112,6 @@ const LoginScreen = () => {
           iconStyle={{ borderColor: "black" }}
           textStyle={{ color: "black", textDecorationLine: "none" }}
           isChecked={rememberPassword}
-          disableBuiltInState
           onPress={(isChecked) => setRememberPassword(isChecked)}
           text="Запомнить пароль"
         />

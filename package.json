@@ -18,11 +18,14 @@
     "expo-image": "^1.0.0-rc.1",
     "expo-sqlite": "^11.0.0",
     "expo-status-bar": "~1.4.2",
+    "prop-types": "^15.8.1",
     "react": "18.1.0",
     "react-native": "0.70.5",
     "react-native-bouncy-checkbox": "^3.0.7",
     "react-native-dropdown-picker": "^5.4.4",
+    "react-native-gesture-handler": "~2.8.0",
     "react-native-quick-md5": "^3.0.4",
+    "react-native-safe-area-context": "4.4.1",
     "react-native-table-component": "github:slice312/react-native-table-component"
   },
   "devDependencies": {
