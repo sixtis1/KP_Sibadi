@@ -36,7 +36,12 @@ export default function App() {
 
 function testDatabase() {
   const db = new Database();
-  db.getGrades(1, 2022, "Весна")
-    .then((grades) => console.log("Grades:", grades))
-    .catch((error) => console.error("Error:", error));
+  db.getSemestersForSubject("Математика")
+    .then((semesters) => {
+      console.log(semesters);
+    })
+    .catch((error) => {
+      console.log(error);
+    });
 }
+testDatabase();

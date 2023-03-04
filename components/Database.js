@@ -114,16 +114,12 @@ class Database {
 
   showDB() {
     db.transaction((tx) => {
-      tx.executeSql(
-        "SELECT name FROM sqlite_master WHERE type='table'",
-        [],
-        (tx, results) => {
-          console.log("Tables in the database:");
-          for (let i = 0; i < results.rows.length; i++) {
-            console.log(results.rows.item(i).name);
-          }
+      tx.executeSql("SELECT student_id FROM Students ", [], (tx, results) => {
+        console.log("Студенты:");
+        for (let i = 0; i < results.rows.length; i++) {
+          console.log(results.rows.item(i).name);
         }
-      );
+      });
     });
   }
 
@@ -136,6 +132,12 @@ class Database {
         tx.executeSql("DELETE FROM Subjects");
         tx.executeSql("DELETE FROM Scores");
         tx.executeSql("DELETE FROM Grades");
+        tx.executeSql("DROP TABLE Students");
+        tx.executeSql("DROP TABLE Years");
+        tx.executeSql("DROP TABLE Semesters");
+        tx.executeSql("DROP TABLE Subjects");
+        tx.executeSql("DROP TABLE Scores");
+        tx.executeSql("DROP TABLE Grades");
       },
       (error) => {
         console.log("Error deleting database: ", error);
@@ -155,7 +157,54 @@ class Database {
           (_, { rows: { _array } }) => {
             console.log("Years:", _array);
             if (_array.length === 0) {
-              reject("No data found in the database.");
+              reject("Error 1");
+            } else {
+              resolve(_array);
+            }
+          },
+          (_, error) => {
+            reject(error);
+          }
+        );
+      });
+    });
+  }
+
+  getSubj() {
+    return new Promise((resolve, reject) => {
+      db.transaction((tx) => {
+        tx.executeSql(
+          "SELECT DISTINCT subject_name FROM Subjects",
+          [],
+          (_, { rows: { _array } }) => {
+            console.log("Subjects:", _array);
+            if (_array.length === 0) {
+              reject(" Error 2");
+            } else {
+              resolve(_array);
+            }
+          },
+          (_, error) => {
+            reject(error);
+          }
+        );
+      });
+    });
+  }
+
+  getSemestersForSubject(subject_name) {
+    return new Promise((resolve, reject) => {
+      db.transaction((tx) => {
+        tx.executeSql(
+          `SELECT DISTINCT Semesters.semester
+        FROM Semesters
+        JOIN Subjects ON Subjects.semester_id = Semesters.semester_id
+        WHERE Subjects.subject_name = ?`,
+          [subject_name],
+          (_, { rows: { _array } }) => {
+            console.log(`Semesters with ${subject_name}:`, _array);
+            if (_array.length === 0) {
+              reject(`No data found in the database for ${subject_name}.`);
             } else {
               resolve(_array);
             }
@@ -177,7 +226,7 @@ class Database {
           (_, { rows: { _array } }) => {
             console.log("Semesters:", _array);
             if (_array.length === 0) {
-              reject("No data found in the database.");
+              reject("Error 3");
             } else {
               resolve(_array);
             }
@@ -194,12 +243,17 @@ class Database {
       db.transaction((tx) => {
         console.log("Query parameters:", studentId, year, semester);
         tx.executeSql(
-          "SELECT s.subject_name, g.grade, sc.score_1k, sc.score_2k FROM Grades g INNER JOIN Subjects s ON g.subject_id = s.subject_id INNER JOIN Scores sc ON g.student_id = sc.student_id AND g.subject_id = sc.subject_id AND g.year_id = sc.year_id AND g.semester_id = sc.semester_id WHERE g.student_id = ? AND g.year_id = (SELECT year_id FROM Years WHERE year = ?) AND g.semester_id = (SELECT semester_id FROM Semesters WHERE semester = ?)",
+          `SELECT s.subject_name, g.grade, sc.score_1k, sc.score_2k 
+          FROM Grades g INNER JOIN Subjects s ON g.subject_id = s.subject_id 
+          INNER JOIN Scores sc ON g.student_id = sc.student_id AND g.subject_id = sc.subject_id 
+          AND g.year_id = sc.year_id AND g.semester_id = sc.semester_id 
+          WHERE g.student_id = ? AND g.year_id = 
+          (SELECT year_id FROM Years WHERE year = ?) AND g.semester_id = (SELECT semester_id FROM Semesters WHERE semester = ?)`,
           [studentId, year, semester],
           (_, { rows: { _array } }) => {
             console.log("Grades:", _array);
             if (_array.length === 0) {
-              reject("No data found in the database.");
+              reject("Error 4");
             } else {
               resolve(_array);
             }
@@ -212,48 +266,48 @@ class Database {
     });
   }
 
-  addScores = (
-    student_id,
-    subject_id,
-    score_1k,
-    score_2k,
-    year_id,
-    semester_id
-  ) => {
+  addScoreAndGrade(studentId, subjectName, year, semester, score, grade) {
     return new Promise((resolve, reject) => {
       db.transaction((tx) => {
         tx.executeSql(
-          `INSERT INTO Scores (student_id, subject_id, score_1k, score_2k, year_id, semester_id) VALUES (?, ?, ?, ?, ?, ?);`,
-          [student_id, subject_id, score_1k, score_2k, year_id, semester_id],
+          `INSERT OR REPLACE INTO Scores (student_id, subject_id, year_id, semester_id, score_1k, score_2k) 
+        VALUES (
+          ?, 
+          (SELECT subject_id FROM Subjects WHERE subject_name = ? AND semester_id = 
+            (SELECT semester_id FROM Semesters WHERE semester = ?)), 
+          (SELECT year_id FROM Years WHERE year = ?), 
+          (SELECT semester_id FROM Semesters WHERE semester = ?), 
+          ?,
+          ?
+        )`,
+          [studentId, subjectName, semester, year, semester, score, score],
           (_, result) => {
-            resolve(result);
+            tx.executeSql(
+              `INSERT OR REPLACE INTO Grades (student_id, subject_id, year_id, semester_id, grade) 
+            VALUES (
+              ?, 
+              (SELECT subject_id FROM Subjects WHERE subject_name = ? AND semester_id = 
+                (SELECT semester_id FROM Semesters WHERE semester = ?)), 
+              (SELECT year_id FROM Years WHERE year = ?), 
+              (SELECT semester_id FROM Semesters WHERE semester = ?), 
+              ?
+            )`,
+              [studentId, subjectName, semester, year, semester, grade],
+              (_, result) => {
+                resolve(result.insertId);
+              },
+              (_, error) => {
+                reject(error);
+              }
+            );
           },
           (_, error) => {
             reject(error);
-            return false;
           }
         );
       });
     });
-  };
-
-  addGrades = (student_id, subject_id, grade, year_id, semester_id) => {
-    return new Promise((resolve, reject) => {
-      db.transaction((tx) => {
-        tx.executeSql(
-          `INSERT INTO Grades (student_id, subject_id, grade, year_id, semester_id) VALUES (?, ?, ?, ?, ?);`,
-          [student_id, subject_id, grade, year_id, semester_id],
-          (_, result) => {
-            resolve(result);
-          },
-          (_, error) => {
-            reject(error);
-            return false;
-          }
-        );
-      });
-    });
-  };
+  }
 }
 
 export default Database;

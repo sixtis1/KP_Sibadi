@@ -202,6 +202,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingBottom: 5,
     paddingHorizontal: 20,
+    minWidth: "58%",
   },
   dropdown: {
     width: "77%",
@@ -217,7 +218,7 @@ const styles = StyleSheet.create({
   },
 
   input: {
-    width: 220,
+    minWidth: "58%",
     height: 45,
     fontSize: 16,
     backgroundColor: "white",
