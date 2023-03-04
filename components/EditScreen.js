@@ -5,12 +5,13 @@ import {
   Text,
   TextInput,
   TouchableOpacity,
-  Image,
+  BackHandler,
   SafeAreaView,
 } from "react-native";
 import Database from "./Database.js";
 import DropDownPicker from "react-native-dropdown-picker";
 import { useNavigation } from "@react-navigation/native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function EditScreen() {
   const navigation = useNavigation();
@@ -79,16 +80,29 @@ export default function EditScreen() {
       });
   }, []);
 
+  const handleGoBack = () => {
+    navigation.navigate("Main");
+    return 1;
+  };
+
+  useEffect(() => {
+    BackHandler.addEventListener("hardwareBackPress", handleGoBack);
+    return () => {
+      BackHandler.removeEventListener("hardwareBackPress", handleGoBack);
+    };
+  }, []);
+
   const handleAddResults = () => {
-    console.log(
-      studentId,
-      subject,
-      year,
-      semester,
-      score_1k,
-      score_2k,
-      finalGrade
-    );
+    if (!score_1k) {
+      setError("Введите первый балл");
+      console.log(error);
+      return;
+    }
+    if (!score_2k && finalGrade) {
+      setError("Введите второй балл");
+      console.log(error);
+      return;
+    }
 
     db.addScoreAndGrade(
       studentId,
@@ -101,6 +115,7 @@ export default function EditScreen() {
     )
       .then((result) => {
         console.log(result);
+        setError("");
       })
       .catch((error) => {
         console.error("Failed to fetch semesters from DB", error);
@@ -121,16 +136,15 @@ export default function EditScreen() {
   };
 
   return (
-    <View style={styles.container}>
-      <View style={styles.inputContainer}>
+    <SafeAreaView style={styles.container}>
+      <View style={[styles.inputContainer, { zIndex: 21 }]}>
         <TextInput
           placeholder="Введите номер зачетки"
-          style={styles.input}
+          style={[styles.input, { zIndex: 21 }]}
           value={studentId}
           onChangeText={(text) => setStudentId(text)}
           keyboardType="numeric"
           maxLength={8}
-          autoFocus={true}
         />
       </View>
       <DropDownPicker
@@ -198,6 +212,8 @@ export default function EditScreen() {
           placeholder="Балл за 1КН"
           onChangeText={setFirstGrade}
           value={score_1k}
+          keyboardType="numeric"
+          maxLength={2}
         />
       </View>
       <View style={styles.inputContainer}>
@@ -206,6 +222,8 @@ export default function EditScreen() {
           placeholder="Балл за 2КН"
           onChangeText={setSecondGrade}
           value={score_2k}
+          keyboardType="numeric"
+          maxLength={2}
         />
       </View>
       <View style={styles.inputContainer}>
@@ -214,6 +232,8 @@ export default function EditScreen() {
           placeholder="Оценка"
           onChangeText={setFinalGrade}
           value={finalGrade}
+          keyboardType="numeric"
+          maxLength={1}
         />
       </View>
       <TouchableOpacity
@@ -223,9 +243,19 @@ export default function EditScreen() {
           handleAddResults();
         }}
       >
-        <Text style={styles.buttonText}>Add Grade</Text>
+        <Text style={styles.buttonText}>Сохранить</Text>
       </TouchableOpacity>
-    </View>
+      <TouchableOpacity
+        style={styles.logoutButton}
+        onPress={() => {
+          AsyncStorage.removeItem("isLoggedIn");
+          navigation.navigate("Main");
+        }}
+      >
+        <Text style={styles.logoutButtonText}>Выйти</Text>
+      </TouchableOpacity>
+      {error && <Text style={styles.errorText}>{error}</Text>}
+    </SafeAreaView>
   );
 }
 
@@ -235,7 +265,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     backgroundColor: "white",
-    position: "relative",
+    paddingTop: 70,
   },
   label: {
     marginBottom: 5,
@@ -275,11 +305,14 @@ const styles = StyleSheet.create({
     borderRadius: 50,
     marginTop: 20,
     color: "white",
+    maxWidth: "67%",
+    minWidth: "55%",
   },
 
   buttonText: {
     color: "#fff",
-    fontSize: 18,
+    fontSize: 16,
+    textAlign: "center",
   },
   logoContainer: {
     marginBottom: 80,
@@ -289,6 +322,35 @@ const styles = StyleSheet.create({
     width: 150,
     height: 150,
     resizeMode: "contain",
+  },
+  errorText: {
+    position: "absolute",
+    bottom: 0,
+    left: 0,
+    right: 0,
+    backgroundColor: "red",
+    color: "white",
+    textAlign: "center",
+    paddingVertical: 10,
+    fontSize: 16,
+    fontWeight: "bold",
+    zIndex: 10,
+  },
+  logoutButton: {
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    backgroundColor: "tomato",
+    borderRadius: 50,
+    marginTop: 20,
+    color: "white",
+    maxWidth: "67%",
+    minWidth: "55%",
+  },
+  logoutButtonText: {
+    color: "#fff",
+    fontSize: 16,
+    zIndex: 14,
+    textAlign: "center",
   },
   errorText: {
     position: "absolute",
