@@ -67,7 +67,10 @@ const MainPage = ({ navigation }) => {
 
   const clearAllData = async () => {
     try {
-      await AsyncStorage.clear();
+      await AsyncStorage.removeItem("results");
+      await AsyncStorage.removeItem("studentId");
+      await AsyncStorage.removeItem("selectedYear");
+      await AsyncStorage.removeItem("selectedSemester");
       console.log("AsyncStorage successfully cleared!");
     } catch (e) {
       console.log("Failed to clear AsyncStorage");
@@ -98,6 +101,20 @@ const MainPage = ({ navigation }) => {
         clearAllData();
       });
   };
+  async function getLoggined() {
+    try {
+      const loggined = await AsyncStorage.getItem("isLoggedIn");
+      if (loggined == null) {
+        console.log(loggined + "2");
+        navigation.navigate("Login");
+      } else {
+        console.log(loggined + "1");
+        navigation.navigate("Edit");
+      }
+    } catch (e) {
+      console.log(e);
+    }
+  }
 
   const showResults = () => {
     navigation.navigate("Results");
@@ -149,15 +166,14 @@ const MainPage = ({ navigation }) => {
         />
       </View>
       <View style={styles.inputContainer}>
-        <Text style={styles.inputLabel}>Номер зачетки:</Text>
         <TextInput
+          placeholder="Введите номер зачетки"
           style={styles.input}
           value={studentId}
           onChangeText={(text) => setStudentId(text)}
           keyboardType="numeric"
           onSubmitEditing={handleShowResults}
           maxLength={8}
-          autoFocus={true}
         />
       </View>
 
@@ -171,13 +187,12 @@ const MainPage = ({ navigation }) => {
       </TouchableOpacity>
 
       <TouchableOpacity
-        style={styles.button}
+        style={styles.loginButton}
         onPress={() => {
-          navigation.navigate("Edit");
-          console.log(results);
+          getLoggined();
         }}
       >
-        <Text style={styles.buttonText}>Эдит</Text>
+        <Text style={styles.loginButtonText}>Войти</Text>
       </TouchableOpacity>
       {error && <Text style={styles.errorText}>{error}</Text>}
     </SafeAreaView>
@@ -202,6 +217,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingBottom: 5,
     paddingHorizontal: 20,
+    minWidth: "58%",
   },
   dropdown: {
     width: "77%",
@@ -215,10 +231,9 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
     zIndex: 3,
   },
-
   input: {
-    width: 220,
-    height: 45,
+    minWidth: "58%",
+    height: 50,
     fontSize: 16,
     backgroundColor: "white",
   },
@@ -257,6 +272,22 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "bold",
     zIndex: 10,
+  },
+  loginButton: {
+    width: 70,
+    height: 40,
+    backgroundColor: "#2196F3",
+    borderRadius: 10,
+    justifyContent: "center",
+    alignItems: "center",
+    position: "absolute",
+    top: 45,
+    right: 15,
+  },
+  loginButtonText: {
+    color: "#fff",
+    fontSize: 16,
+    fontWeight: "bold",
   },
 });
 

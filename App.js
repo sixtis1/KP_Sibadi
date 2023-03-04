@@ -1,16 +1,29 @@
-import React from "react";
+import React, { useEffect } from "react";
 import Database from "./components/Database";
 import MainPage from "./components/MainPage";
 import { createStackNavigator } from "@react-navigation/stack";
 import { NavigationContainer } from "@react-navigation/native";
 import ResultsScreen from "./components/ResultsScreen";
 import EditScreen from "./components/EditScreen";
+import LoginScreen from "./components/LoginScreen";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const Stack = createStackNavigator();
 
 const db = new Database();
 
 export default function App() {
+  const [isLoggedIn, setIsLoggedIn] = React.useState(null);
+
+  useEffect(() => {
+    checkIfLoggedIn();
+  }, []);
+
+  const checkIfLoggedIn = async () => {
+    const isLoggedIn = await AsyncStorage.getItem("isLoggedIn");
+    setIsLoggedIn(isLoggedIn);
+  };
+
   return (
     <NavigationContainer>
       <Stack.Navigator>
@@ -29,6 +42,11 @@ export default function App() {
           name="Edit"
           component={EditScreen}
         />
+        <Stack.Screen
+          options={{ headerShown: false }}
+          name="Login"
+          component={LoginScreen}
+        />
       </Stack.Navigator>
     </NavigationContainer>
   );
@@ -36,7 +54,12 @@ export default function App() {
 
 function testDatabase() {
   const db = new Database();
-  db.getGrades(1, 2022, "Весна")
-    .then((grades) => console.log("Grades:", grades))
-    .catch((error) => console.error("Error:", error));
+  db.getSemestersForSubject("Математика")
+    .then((semesters) => {
+      console.log(semesters);
+    })
+    .catch((error) => {
+      console.log(error);
+    });
 }
+testDatabase();
