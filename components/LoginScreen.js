@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   BackHandler,
   SafeAreaView,
+  Image,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -85,6 +86,9 @@ const LoginScreen = () => {
 
   return (
     <SafeAreaView style={styles.container}>
+      <View style={styles.logoContainer}>
+        <Image style={styles.logo} source={require("../assets/logo.png")} />
+      </View>
       <View style={styles.inputView}>
         <TextInput
           value={login}
@@ -135,7 +139,6 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
     alignItems: "center",
     justifyContent: "center",
-    paddingTop: 80,
   },
   logo: {
     fontWeight: "bold",
@@ -190,6 +193,15 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "bold",
     zIndex: 10,
+  },
+  logo: {
+    width: 170,
+    height: 170,
+    resizeMode: "contain",
+  },
+  logoContainer: {
+    marginBottom: 25,
+    alignSelf: "center",
   },
 });
 
