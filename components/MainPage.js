@@ -252,12 +252,12 @@ const styles = StyleSheet.create({
     fontSize: 18,
   },
   logoContainer: {
-    marginBottom: 80,
+    marginBottom: 35,
     alignSelf: "center",
   },
   logo: {
-    width: 150,
-    height: 150,
+    width: 170,
+    height: 170,
     resizeMode: "contain",
   },
   errorText: {
