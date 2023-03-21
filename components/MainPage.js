@@ -11,6 +11,7 @@ import {
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Database from "./Database.js";
 import DropDownPicker from "react-native-dropdown-picker";
+import Dictionary from "../assets/dictionaryLang";
 
 const db = new Database();
 db.showDB();
@@ -77,6 +78,36 @@ const MainPage = ({ navigation }) => {
     }
   };
 
+  const closeDropDown = () => {
+    function controller(dropdownIndex) {
+      switch (dropdownIndex) {
+        case 1:
+          if (openSemester) {
+            setOpenSemester(false);
+          }
+        case 2:
+          if (openYear) {
+            setOpenYear(false);
+          }
+      }
+    }
+
+    const indexes = {
+      indexSemester: 2,
+      indexYear: 1,
+    };
+
+    const controllers = {
+      controllerSemester: function () {
+        controller(indexes.indexSemester);
+      },
+      controllerYear: function () {
+        controller(indexes.indexYear);
+      },
+    };
+    return controllers;
+  };
+
   const handleShowResults = () => {
     setError(null);
     clearAllData();
@@ -101,6 +132,7 @@ const MainPage = ({ navigation }) => {
         clearAllData();
       });
   };
+
   async function getLoggined() {
     try {
       const loggined = await AsyncStorage.getItem("isLoggedIn");
@@ -129,14 +161,14 @@ const MainPage = ({ navigation }) => {
         <DropDownPicker
           open={openYear}
           value={selectedYear}
-          placeholder="Выберите год обучения"
+          placeholder={Dictionary.selectYearLable.ru}
           items={years.map((year) => ({
             label: year.toString(),
             value: year,
           }))}
           setOpen={(isOpen) => {
             setOpenYear(isOpen);
-            setOpenSemester(false);
+            closeDropDown().controllerYear();
           }}
           setValue={setSelectedYear}
           setItems={() => {}}
@@ -156,7 +188,7 @@ const MainPage = ({ navigation }) => {
           }))}
           setOpen={(isOpen) => {
             setOpenSemester(isOpen);
-            setOpenYear(false);
+            closeDropDown().controllerSemester();
           }}
           setValue={setSelectedSemester}
           setItems={() => {}}
