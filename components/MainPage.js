@@ -17,7 +17,7 @@ db.showDB();
 const MainPage = ({ navigation }) => {
   const [selectedYear, setSelectedYear] = useState(null);
   const [selectedSemester, setSelectedSemester] = useState(null);
-  const [studentId, setStudentId] = useState(1);
+  const [studentId, setStudentId] = useState(null);
   const [results, setResults] = useState([]);
   const [error, setError] = useState(null);
   const [years, setYears] = useState([]);

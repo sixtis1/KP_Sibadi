@@ -127,7 +127,7 @@ const LoginScreen = () => {
           handleLogin();
         }}
       >
-        <Text style={styles.loginText}>ВОЙТИ</Text>
+        <Text style={styles.loginButtonText}>ВОЙТИ</Text>
       </TouchableOpacity>
     </SafeAreaView>
   );
@@ -177,6 +177,11 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     marginTop: 40,
     marginBottom: 10,
+  },
+  loginButtonText: {
+    color: "#fff",
+    fontSize: 16,
+    fontWeight: "bold",
   },
   rememberPasswordView: {
     paddingRight: 120,
