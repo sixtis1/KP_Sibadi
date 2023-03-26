@@ -9,6 +9,7 @@ import {
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useNavigation } from "@react-navigation/native";
 import { Table, Row } from "react-native-table-component";
+import Dictionary from "../assets/dictionaryLang";
 
 export default function ResultsScreen() {
   const [results, setResults] = useState([]);
@@ -16,6 +17,7 @@ export default function ResultsScreen() {
   const [selectedYear, setSelectedYear] = useState("");
   const [selectedSemester, setSelectedSemester] = useState("");
   const navigation = useNavigation();
+  const [language, setLanguage] = useState();
 
   const handleGoBack = () => {
     setResults([]);
@@ -47,6 +49,37 @@ export default function ResultsScreen() {
       console.log(e);
     }
   }
+
+  function translateSubject(subjectKey) {
+    const translatedSubject = Dictionary.subjects[subjectKey]?.[language];
+    if (translatedSubject) {
+      return translatedSubject;
+    } else {
+      return subjectKey;
+    }
+  }
+
+  function translateSemester(semesterKey) {
+    const translatedSemester = Dictionary.semesters[semesterKey]?.[language];
+    if (translatedSemester) {
+      return translatedSemester;
+    } else {
+      return semesterKey;
+    }
+  }
+
+  async function getLang() {
+    try {
+      const storedLang = await AsyncStorage.getItem("language");
+      if (storedLang !== null || storedLang !== undefined) {
+        setLanguage(storedLang);
+      } else setLanguage("ru");
+    } catch (e) {
+      setLanguage("ru");
+      console.log(e);
+    }
+  }
+
   useEffect(() => {
     BackHandler.addEventListener("hardwareBackPress", handleGoBack);
     return () => {
@@ -58,34 +91,49 @@ export default function ResultsScreen() {
     getResults();
   }, []);
 
+  getLang();
   return (
     <SafeAreaView style={styles.container}>
       <SafeAreaView style={styles.header}>
-        <Text style={styles.title}>Результаты студента</Text>
-        <Text style={styles.subtitle}>Студент: {studentId}</Text>
-        <Text style={styles.subtitle}>Год: {selectedYear}</Text>
-        <Text style={styles.subtitle}>Семестр: {selectedSemester}</Text>
+        <Text style={styles.title}>
+          {Dictionary.resultsScreen.title[language]}
+        </Text>
+        <Text style={styles.subtitle}>
+          {Dictionary.resultsScreen.subtitleStudent[language]} {studentId}
+        </Text>
+        <Text style={styles.subtitle}>
+          {Dictionary.resultsScreen.subtitleYear[language]} {selectedYear}
+        </Text>
+        <Text style={styles.subtitle}>
+          {Dictionary.resultsScreen.subtitleSemester[language]}{" "}
+          {translateSemester(selectedSemester)}
+        </Text>
       </SafeAreaView>
       <SafeAreaView style={styles.tableContainer}>
         <Table style={styles.table}>
           <Row
-            data={["Предмет", "Балл 1", "Балл 2", "Оценка"]}
+            data={[
+              Dictionary.resultsScreen.tableHead.subject[language],
+              Dictionary.resultsScreen.tableHead.score1[language],
+              Dictionary.resultsScreen.tableHead.score2[language],
+              Dictionary.resultsScreen.tableHead.grade[language],
+            ]}
             style={[styles.head, styles.borderStyle]}
             textStyle={[styles.textHead]}
-            flexArr={[2, 0.8, 0.8, 1]}
+            flexArr={[2, 0.9, 0.9, 0.8]}
           />
           {results.map((result) => (
             <Row
               key={result.subject_name}
               data={[
-                result.subject_name,
+                translateSubject(result.subject_name),
                 result.score_1k.toString(),
                 result.score_2k.toString(),
                 result.grade.toString(),
               ]}
               style={[styles.row, styles.borderStyle]}
               textStyle={[styles.text]}
-              flexArr={[2, 0.8, 0.8, 1]}
+              flexArr={[2, 0.9, 0.9, 0.8]}
             />
           ))}
         </Table>
@@ -97,7 +145,9 @@ export default function ResultsScreen() {
         }}
       >
         <SafeAreaView style={styles.button}>
-          <Text style={styles.buttonText}>Назад</Text>
+          <Text style={styles.buttonText}>
+            {Dictionary.backButton[language]}
+          </Text>
         </SafeAreaView>
       </TouchableOpacity>
     </SafeAreaView>

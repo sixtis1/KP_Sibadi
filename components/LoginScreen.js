@@ -13,6 +13,7 @@ import { useNavigation } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Database from "./Database.js";
 import BouncyCheckbox from "react-native-bouncy-checkbox";
+import Dictionary from "../assets/dictionaryLang";
 
 const db = new Database();
 
@@ -34,6 +35,19 @@ const LoginScreen = () => {
     };
   }, []);
 
+  async function getLang() {
+    try {
+      const storedLang = await AsyncStorage.getItem("language");
+      if (storedLang !== null || storedLang !== undefined) {
+        setLanguage(storedLang);
+      } else setLanguage("ru");
+    } catch (e) {
+      setLanguage("ru");
+      console.log(e);
+    }
+  }
+  getLang();
+
   const checkLogin = async () => {
     const isLoggedIn = await AsyncStorage.getItem("isLoggedIn");
     if (isLoggedIn) {
@@ -45,6 +59,7 @@ const LoginScreen = () => {
   const [rememberPassword, setRememberPassword] = useState(false);
   const [error, setError] = useState("");
   const navigation = useNavigation();
+  const [language, setLanguage] = useState();
 
   const clearInputs = () => {
     setLogin("");
@@ -55,7 +70,7 @@ const LoginScreen = () => {
 
   const handleLogin = async () => {
     if (!login || !password) {
-      setError("Пожалуйста введите логин и пароль.");
+      setError(Dictionary.errors.loginpage.noPassword[language]);
       return;
     }
     if (!rememberPassword) {
@@ -93,7 +108,7 @@ const LoginScreen = () => {
         <TextInput
           value={login}
           style={styles.inputText}
-          placeholder="Логин"
+          placeholder={Dictionary.loginpage.login[language]}
           placeholderTextColor="#003f5c"
           onChangeText={(text) => setLogin(text)}
         />
@@ -103,7 +118,7 @@ const LoginScreen = () => {
           value={password}
           style={styles.inputText}
           secureTextEntry={true}
-          placeholder="Пароль"
+          placeholder={Dictionary.loginpage.password[language]}
           placeholderTextColor="#003f5c"
           onChangeText={(text) => setPassword(text)}
         />
@@ -117,7 +132,7 @@ const LoginScreen = () => {
           textStyle={{ color: "black", textDecorationLine: "none" }}
           isChecked={rememberPassword}
           onPress={(isChecked) => setRememberPassword(isChecked)}
-          text="Запомнить пароль"
+          text={Dictionary.loginpage.rememberPassword[language]}
         />
       </View>
       {error ? <Text style={styles.errorText}>{error}</Text> : null}
@@ -127,7 +142,9 @@ const LoginScreen = () => {
           handleLogin();
         }}
       >
-        <Text style={styles.loginButtonText}>ВОЙТИ</Text>
+        <Text style={styles.loginButtonText}>
+          {Dictionary.loginpage.enter[language]}
+        </Text>
       </TouchableOpacity>
     </SafeAreaView>
   );

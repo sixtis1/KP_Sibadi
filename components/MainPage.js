@@ -25,6 +25,7 @@ const MainPage = ({ navigation }) => {
   const [semesters, setSemesters] = useState([]);
   const [openYear, setOpenYear] = useState(false);
   const [openSemester, setOpenSemester] = useState(false);
+  const [language, setLanguage] = useState("ru");
 
   useEffect(() => {
     db.getYears()
@@ -66,6 +67,14 @@ const MainPage = ({ navigation }) => {
     }
   };
 
+  const saveLang = async (language) => {
+    try {
+      await AsyncStorage.setItem("language", language);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   const clearAllData = async () => {
     try {
       await AsyncStorage.removeItem("results");
@@ -75,6 +84,21 @@ const MainPage = ({ navigation }) => {
       console.log("AsyncStorage successfully cleared!");
     } catch (e) {
       console.log("Failed to clear AsyncStorage");
+    }
+  };
+
+  const changeLanguage = () => {
+    setLanguage(language === "ru" ? "en" : "ru");
+    setError(null);
+    saveLang(language);
+  };
+
+  const translateSemester = (semesterKey) => {
+    const translatedSemester = Dictionary.semesters[semesterKey]?.[language];
+    if (translatedSemester) {
+      return translatedSemester;
+    } else {
+      return semesterKey;
     }
   };
 
@@ -115,19 +139,17 @@ const MainPage = ({ navigation }) => {
     db.getGrades(studentId, selectedYear, selectedSemester)
       .then((results) => {
         if (results.length === 0) {
-          throw new Error(
-            "Ошибка в введенных данных. Проверьте данные и повторите попытку."
-          );
+          throw new Error(Dictionary.errors.mainpage[language]);
         } else {
           setResults(results);
           saveData(results, studentId, selectedYear, selectedSemester);
           showResults();
+          saveLang(language);
+          console.log(results);
         }
       })
       .catch(() => {
-        setError(
-          "Ошибка в введенных данных. Проверьте данные и повторите попытку."
-        );
+        setError(Dictionary.errors.mainpage[language]);
         setResults([]);
         clearAllData();
       });
@@ -137,10 +159,12 @@ const MainPage = ({ navigation }) => {
     try {
       const loggined = await AsyncStorage.getItem("isLoggedIn");
       if (loggined == null) {
-        console.log(loggined + "2");
+        setError(null);
+        saveLang(language);
         navigation.navigate("Login");
       } else {
-        console.log(loggined + "1");
+        setError(null);
+        saveLang(language);
         navigation.navigate("Edit");
       }
     } catch (e) {
@@ -161,7 +185,7 @@ const MainPage = ({ navigation }) => {
         <DropDownPicker
           open={openYear}
           value={selectedYear}
-          placeholder={Dictionary.selectYearLable.ru}
+          placeholder={Dictionary.selectYearLabel[language]}
           items={years.map((year) => ({
             label: year.toString(),
             value: year,
@@ -181,9 +205,9 @@ const MainPage = ({ navigation }) => {
         <DropDownPicker
           open={openSemester}
           value={selectedSemester}
-          placeholder="Выберите семестр"
+          placeholder={Dictionary.selectSemesterPlaceholder[language]}
           items={semesters.map((semester) => ({
-            label: semester,
+            label: translateSemester(semester),
             value: semester,
           }))}
           setOpen={(isOpen) => {
@@ -199,7 +223,7 @@ const MainPage = ({ navigation }) => {
       </View>
       <View style={styles.inputContainer}>
         <TextInput
-          placeholder="Введите номер зачетки"
+          placeholder={Dictionary.studentIdPlaceholder[language]}
           style={styles.input}
           value={studentId}
           onChangeText={(text) => setStudentId(text)}
@@ -215,7 +239,9 @@ const MainPage = ({ navigation }) => {
           handleShowResults();
         }}
       >
-        <Text style={styles.buttonText}>Показать результаты</Text>
+        <Text style={styles.buttonText}>
+          {Dictionary.showResultsButton[language]}
+        </Text>
       </TouchableOpacity>
 
       <TouchableOpacity
@@ -224,7 +250,17 @@ const MainPage = ({ navigation }) => {
           getLoggined();
         }}
       >
-        <Text style={styles.loginButtonText}>Войти</Text>
+        <Text style={styles.loginButtonText}>
+          {Dictionary.loginButton[language]}
+        </Text>
+      </TouchableOpacity>
+      <TouchableOpacity
+        style={styles.languageSwitchButton}
+        onPress={changeLanguage}
+      >
+        <Text style={styles.languageSwitchButtonText}>
+          {language === "ru" ? "EN" : "RU"}
+        </Text>
       </TouchableOpacity>
       {error && <Text style={styles.errorText}>{error}</Text>}
     </SafeAreaView>
@@ -317,6 +353,22 @@ const styles = StyleSheet.create({
     right: 15,
   },
   loginButtonText: {
+    color: "#fff",
+    fontSize: 16,
+    fontWeight: "bold",
+  },
+  languageSwitchButton: {
+    width: 50,
+    height: 30,
+    backgroundColor: "#2196F3",
+    borderRadius: 10,
+    justifyContent: "center",
+    alignItems: "center",
+    position: "absolute",
+    top: 45,
+    left: 15,
+  },
+  languageSwitchButtonText: {
     color: "#fff",
     fontSize: 16,
     fontWeight: "bold",
