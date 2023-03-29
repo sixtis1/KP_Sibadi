@@ -14,8 +14,7 @@ import { useNavigation } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Dictionary from "../assets/dictionaryLang.js";
 
-export default function EditScreen() {
-  const navigation = useNavigation();
+const EditScreen = ({ navigation }) => {
   const [studentId, setStudentId] = useState("");
   const [year, setYear] = useState("");
   const [semester, setSemester] = useState([]);
@@ -155,7 +154,7 @@ export default function EditScreen() {
       .then((result) => {
         console.log(result);
         setError("");
-        setSuccessMessage("Данные успешно добавлены!");
+        setSuccessMessage(Dictionary.editpage.success[language]);
         setTimeout(() => setSuccessMessage(null), 3000);
       })
       .catch((error) => {
@@ -189,7 +188,7 @@ export default function EditScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={styles.container} testID="edit-screen">
       <View style={[styles.inputContainer, { zIndex: 21 }]}>
         <TextInput
           placeholder={Dictionary.studentIdPlaceholder[language]}
@@ -198,6 +197,7 @@ export default function EditScreen() {
           onChangeText={(text) => setStudentId(text)}
           keyboardType="numeric"
           maxLength={8}
+          testID="student-id-input"
         />
       </View>
       <DropDownPicker
@@ -217,6 +217,7 @@ export default function EditScreen() {
         containerStyle={[styles.dropdownContainer, { zIndex: 20 }]}
         style={[styles.dropdown]}
         dropDownContainerStyle={[{ width: "77%" }]}
+        testID="year-dropdown"
       />
       <DropDownPicker
         open={openSubjects}
@@ -235,6 +236,7 @@ export default function EditScreen() {
         containerStyle={[styles.dropdownContainer, { zIndex: 19 }]}
         style={[styles.dropdown]}
         dropDownContainerStyle={[{ width: "77%" }]}
+        testID="subject-dropdown"
       />
       <DropDownPicker
         open={openSemester}
@@ -254,6 +256,7 @@ export default function EditScreen() {
         containerStyle={[styles.dropdownContainer, { zIndex: 18 }]}
         style={[styles.dropdown]}
         dropDownContainerStyle={[{ width: "77%" }]}
+        testID="semester-dropdown"
       />
       <View style={styles.inputContainer}>
         <TextInput
@@ -263,6 +266,7 @@ export default function EditScreen() {
           value={score_1k}
           keyboardType="numeric"
           maxLength={2}
+          testID="score1-input"
         />
       </View>
       <View style={styles.inputContainer}>
@@ -273,6 +277,7 @@ export default function EditScreen() {
           value={score_2k}
           keyboardType="numeric"
           maxLength={2}
+          testID="score2-input"
         />
       </View>
       <View style={styles.inputContainer}>
@@ -283,6 +288,7 @@ export default function EditScreen() {
           value={finalGrade}
           keyboardType="numeric"
           maxLength={1}
+          testID="final-grade-input"
         />
       </View>
       <TouchableOpacity
@@ -313,7 +319,7 @@ export default function EditScreen() {
       )}
     </SafeAreaView>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {
@@ -435,3 +441,5 @@ const styles = StyleSheet.create({
     zIndex: 10,
   },
 });
+
+export default EditScreen;

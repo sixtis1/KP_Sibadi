@@ -30,7 +30,6 @@ const MainPage = ({ navigation }) => {
   useEffect(() => {
     db.getYears()
       .then((json) => {
-        console.log(json);
         const years = json.map((item) => item.year);
         setYears(years);
       })
@@ -81,7 +80,6 @@ const MainPage = ({ navigation }) => {
       await AsyncStorage.removeItem("studentId");
       await AsyncStorage.removeItem("selectedYear");
       await AsyncStorage.removeItem("selectedSemester");
-      console.log("AsyncStorage successfully cleared!");
     } catch (e) {
       console.log("Failed to clear AsyncStorage");
     }
@@ -135,7 +133,6 @@ const MainPage = ({ navigation }) => {
   const handleShowResults = () => {
     setError(null);
     clearAllData();
-    console.log(studentId, selectedYear, selectedSemester);
     db.getGrades(studentId, selectedYear, selectedSemester)
       .then((results) => {
         if (results.length === 0) {
@@ -374,5 +371,4 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
 });
-
 export default MainPage;

@@ -79,8 +79,8 @@ const LoginScreen = () => {
           navigation.navigate("Edit");
           clearInputs();
         })
-        .catch((errorMessage) => {
-          setError(errorMessage);
+        .catch(() => {
+          setError(Dictionary.errors.loginpage.wrongLoginOrPassword[language]);
         });
     } else {
       db.loginFunc(login, password)
@@ -106,6 +106,7 @@ const LoginScreen = () => {
       </View>
       <View style={styles.inputView}>
         <TextInput
+          testID="loginInput"
           value={login}
           style={styles.inputText}
           placeholder={Dictionary.loginpage.login[language]}
@@ -115,6 +116,7 @@ const LoginScreen = () => {
       </View>
       <View style={styles.inputView}>
         <TextInput
+          testID="passwordInput"
           value={password}
           style={styles.inputText}
           secureTextEntry={true}
@@ -137,6 +139,7 @@ const LoginScreen = () => {
       </View>
       {error ? <Text style={styles.errorText}>{error}</Text> : null}
       <TouchableOpacity
+        testID="loginButton"
         style={styles.loginBtn}
         onPress={() => {
           handleLogin();

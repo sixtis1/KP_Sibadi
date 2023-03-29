@@ -120,7 +120,7 @@ export default function ResultsScreen() {
             ]}
             style={[styles.head, styles.borderStyle]}
             textStyle={[styles.textHead]}
-            flexArr={[2, 0.9, 0.9, 0.8]}
+            flexArr={[2, 0.9, 0.9, 0.9]}
           />
           {results.map((result) => (
             <Row
@@ -133,7 +133,7 @@ export default function ResultsScreen() {
               ]}
               style={[styles.row, styles.borderStyle]}
               textStyle={[styles.text]}
-              flexArr={[2, 0.9, 0.9, 0.8]}
+              flexArr={[2, 0.9, 0.9, 0.9]}
             />
           ))}
         </Table>

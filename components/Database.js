@@ -236,7 +236,6 @@ class Database {
           "SELECT DISTINCT semester FROM Semesters",
           [],
           (_, { rows: { _array } }) => {
-            console.log("Semesters:", _array);
             if (_array.length === 0) {
               reject("Error 3");
             } else {
@@ -253,7 +252,6 @@ class Database {
   getGrades(studentId, year, semester) {
     return new Promise((resolve, reject) => {
       db.transaction((tx) => {
-        console.log("Query parameters:", studentId, year, semester);
         tx.executeSql(
           `SELECT s.subject_name, g.grade, sc.score_1k, sc.score_2k 
           FROM Grades g INNER JOIN Subjects s ON g.subject_id = s.subject_id 
@@ -263,7 +261,6 @@ class Database {
           (SELECT year_id FROM Years WHERE year = ?) AND g.semester_id = (SELECT semester_id FROM Semesters WHERE semester = ?)`,
           [studentId, year, semester],
           (_, { rows: { _array } }) => {
-            console.log("Grades:", _array);
             if (_array.length === 0) {
               reject("Error 4");
             } else {

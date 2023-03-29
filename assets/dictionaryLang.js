@@ -142,6 +142,10 @@ const Dictionary = {
         en: "Please enter login and password",
         ru: "Пожалуйста введите логин и пароль",
       },
+      wrongLoginOrPassword: {
+        en: "Wrong login or password",
+        ru: "Неверный логин или пароль",
+      },
     },
     editpage: {
       noFirstScore: {
